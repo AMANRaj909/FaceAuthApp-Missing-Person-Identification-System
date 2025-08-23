@@ -13,6 +13,9 @@ CORS(app)
 # 📂 Ensure folders exist
 UPLOAD_FOLDER = "static/uploads"
 DB_FOLDER = "database"
+# temporary folder for verification uploads (not persisted)
+TMP_UPLOAD_DIR = "static/tmp"
+os.makedirs(TMP_UPLOAD_DIR, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DB_FOLDER, exist_ok=True)
 
@@ -130,74 +133,12 @@ def register():
         }
     })
 
-@app.route("/verify", methods=["POST"])
-def verify():
-    if "image" not in request.files:
-        return jsonify({"status": "error", "message": "Image required"}), 400
-
-    image = request.files["image"]
-    filename = secure_filename(image.filename)
-    rel_path = os.path.join(UPLOAD_FOLDER, filename)
-    abs_path = os.path.abspath(rel_path)
-    image.save(abs_path)
-    resize_image(abs_path)
-
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, name, age, location, reg_date, image_path, rel_path FROM users")
-    users = cursor.fetchall()
-    conn.close()
-
-    best_match = None
-    best_confidence = 0.0
-
-    for user in users:
-        user_id, db_name, db_age, db_location, db_reg_date, db_abs_path, db_rel_path = user
-        try:
-            result = DeepFace.verify(
-                img1_path=abs_path,
-                img2_path=db_abs_path,
-                model_name=MODEL_NAME,
-                enforce_detection=False
-            )
-
-            if result["verified"]:
-                distance = result.get("distance", 0.0)
-                confidence = round((1 - distance) * 100, 2)
-
-                # always keep highest confidence match
-                if confidence > best_confidence:
-                    best_confidence = confidence
-                    best_match = {
-                        "name": db_name,
-                        "age": db_age,
-                        "location": db_location,
-                        "reg_date": db_reg_date,
-                        "registered_image_url": f"http://{request.host}/{db_rel_path}"
-                    }
-
-        except Exception as e:
-            print("⚠️ DeepFace error:", str(e), "for user:", db_name, "path:", db_abs_path)
-            continue
-
-    if best_match:
-        return jsonify({
-            "status": "success",
-            "match": True,
-            "confidence": best_confidence,
-            "user": best_match,
-            "uploaded_image_url": f"http://{request.host}/{rel_path}"
-        })
-
-    # ❌ No match case → still return uploaded image URL
-    return jsonify({
+return jsonify({
         "status": "success",
         "match": False,
         "message": "No match found. Please register the person.",
         "uploaded_image_url": f"http://{request.host}/{rel_path}"
     })
-
-
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "message": "Backend is running"})
