@@ -1,4 +1,4 @@
-# Python
+# ---- Python ----
 venv/
 __pycache__/
 *.pyd
@@ -9,13 +9,22 @@ __pycache__/
 *.db
 .DS_Store
 
-# Android Studio / Java
+# ---- Android / Java ----
 .gradle/
-/build/
+build/
 local.properties
 *.iml
 .idea/
 .cxx/
 .externalNativeBuild/
 captures/
-.gradletasknamecache
+.gradle/
+gradle-app.setting
+.gradle_task_name_cache
+
+# ---- OS / Editor ----
+*.swp
+*~
+*.tmp
+*.bak
+Thumbs.db
