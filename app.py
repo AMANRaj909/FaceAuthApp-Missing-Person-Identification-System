@@ -13,11 +13,19 @@ CORS(app)
 # 📂 Ensure folders exist
 UPLOAD_FOLDER = "static/uploads"
 DB_FOLDER = "database"
+
+UPLOAD_FOLDER = "static/uploads"
+VERIFY_TEMP_FOLDER = "static/verify_temp"
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(VERIFY_TEMP_FOLDER, exist_ok=True)
+
+
+
+
 # temporary folder for verification uploads (not persisted)
 TMP_UPLOAD_DIR = "static/tmp"
 os.makedirs(TMP_UPLOAD_DIR, exist_ok=True)
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DB_FOLDER, exist_ok=True)
 
 DB_PATH = os.path.join(DB_FOLDER, "users.db")
@@ -143,8 +151,9 @@ def verify():
 
     image = request.files["image"]
     filename = secure_filename(image.filename)
-    rel_path = os.path.join(UPLOAD_FOLDER, filename)
+    rel_path = os.path.join(VERIFY_TEMP_FOLDER, filename)  # save in temp folder
     abs_path = os.path.abspath(rel_path)
+
     # ✅ Open uploaded image, resize before saving
     img = Image.open(image)
     img.thumbnail((400, 400))   # shrink to max 400x400
@@ -205,6 +214,24 @@ def verify():
         "message": "No match found. Please register the person.",
         "uploaded_image_url": f"http://{request.host}/{rel_path}"
     })
+
+@app.route("/cleanup_verify", methods=["POST"])
+def cleanup_verify():
+    try:
+        deleted_files = []
+        for f in os.listdir(VERIFY_TEMP_FOLDER):
+            file_path = os.path.join(VERIFY_TEMP_FOLDER, f)
+            os.remove(file_path)
+            deleted_files.append(f)
+
+        return jsonify({
+            "status": "success",
+            "message": f"Deleted {len(deleted_files)} temp verify images",
+            "files": deleted_files
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
 
 
 @app.route("/health", methods=["GET"])
