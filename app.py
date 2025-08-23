@@ -66,8 +66,8 @@ def cleanup_db():
         print(f"✅ DB Cleanup done → Fixed: {fixed}, Removed: {removed}")
 
 # ✅ Preload DeepFace model
-print("🔄 Loading DeepFace model (Facenet)...")
-MODEL_NAME = "Facenet"
+print("🔄 Loading DeepFace model (SFace)...")
+MODEL_NAME = "SFace"
 model = DeepFace.build_model(MODEL_NAME)
 print("✅ Model loaded and ready!")
 
