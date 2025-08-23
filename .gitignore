@@ -1,0 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.pyd
+*.dll
+*.so
+*.log
+*.sqlite3
+*.db
+.DS_Store
+
+# Android Studio / Java
+.gradle/
+/build/
+local.properties
+*.iml
+.idea/
+.cxx/
+.externalNativeBuild/
+captures/
+.gradletasknamecache
