@@ -202,5 +202,28 @@ def verify():
 def health():
     return jsonify({"status": "ok", "message": "Backend is running"})
 
+
+@app.route("/", methods=["GET"])
+def home():
+    return """
+    <html>
+        <head><title>FaceAuth API</title></head>
+        <body style="font-family: Arial; text-align: center; margin-top: 100px;">
+            <h1>🚀 FaceAuth API is Running!</h1>
+            <p>Available Endpoints:</p>
+            <ul style="list-style:none;">
+                <li>🔹 <a href="/ping">/ping</a></li>
+                <li>🔹 <a href="/health">/health</a></li>
+                <li>🔹 <b>POST</b> /register</li>
+                <li>🔹 <b>POST</b> /verify</li>
+            </ul>
+        </body>
+    </html>
+    """
+
+
+
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
