@@ -1,30 +1,47 @@
 # ---- Python ----
-venv/
 __pycache__/
+*.py[cod]
+*$py.class
 *.pyd
 *.dll
 *.so
 *.log
 *.sqlite3
 *.db
-.DS_Store
 
-# ---- Android / Java ----
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# ---- Android ----
+.gradle/
+local.properties
+.idea/
+*.iml
 .gradle/
 build/
-local.properties
-*.iml
-.idea/
 .cxx/
 .externalNativeBuild/
 captures/
-.gradle/
-gradle-app.setting
-.gradle_task_name_cache
+
+# ---- Android Studio ----
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+bin/
+gen/
+out/
+*.log
+*.hprof
 
 # ---- OS / Editor ----
+.DS_Store
+Thumbs.db
 *.swp
 *~
 *.tmp
 *.bak
-Thumbs.db
